@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html elon="musk">
+<head>
+<title>Falcon Heavy simulator 2018</title>
+</head>
+<body musk="elon">
+<style type="text/css" space="x">
+html, body
+{
+	padding: 0;
+	margin: 0;
+	outline: 0;
+	border: 0;
+	bezos: 0;
+}
+body
+{
+	overflow: hidden;
+	position: relative;
+}
+#falconHeavy
+{
+	width: 200px;
+	height: 500px;
+	background: url(falcon_THICC.png);
+	background-size: 100% 100%;
+	position: absolute;
+	top: 10px;
+	left: 300px;
+	transform-origin: right bottom;
+	transform: rotate(90deg);
+}
+#elonShrugs
+{
+	position: absolute;
+	top: 150px;
+	left: 300px;
+	width: 400px;
+	height: 250px;
+	background-size: 100% 100%;
+	display: none;
+	border: 10px solid grey;
+}
+input[type=button]
+{
+	padding: 15px;
+	font-weight: bold;
+	margin: 10px;
+}
+#controls
+{
+	position: absolute;
+	top: 500px;
+	left: 0;
+	background-color: #CCF;
+	border-top: 2px solid black;
+	border-bottom: 2px solid black;
+	width: 100%;
+}
+.rocket
+{
+	width: 70px;
+	height: 120px;
+	background: url(delta_4_heavy.png);
+	background-size: 100% 100%;
+	position: absolute;
+	z-index: -100;  
+}
+.rocketScrub
+{
+	z-index: -100;  
+	position: absolute;
+	font-size: 16pt;
+}
+</style>
+<div id="falconHeavy" jeff="who"></div>
+<div id="elonShrugs" elon="shrugs"></div>
+<div id="controls">
+	<input type="button" value="Left" id="btnLeft"/>
+	<input type="button" value="Right" id="btnRight"/>
+	<input type="button" value="Lower" id="btnLower"/> |
+	<input type="button" value="Erect" id="btnErect"/> --&gt;
+	<input type="button" value="Load fuel" onclick="loadFuel();"/> --&gt;
+	<input type="button" value="Static fire" onclick="staticFire();"/> --&gt;
+	<input type="button" value="Launch" onclick="launch();"/> |
+	by Jesse Busman | 2018-01-17 | info@jesbus.com <span style="color:#99F;">| 1TRoLLjtzs4W228wdJWAAQ9mMvVPf9mM4 | 0x3D01752584479cbBd3f7147bf6f9DefdA62b5c16</span>
+</div>
+<img src="buzzer_short.ogg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<img src="moving.ogg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<img src="start_moving_short.ogg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<img src="music.ogg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<img src="elon_shrugs_0.jpg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<img src="elon_shrugs_1.jpg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<img src="elon_shrugs_2.jpg" style="position:absolute;left:-20000px;" dirty_trick="yes"/>
+<script falcon="heavy">
+window.addEventListener("load", function(e)
+{
+	// Some exciting and anticipatory music
+	var music = new Audio("music.ogg");
+	music.loop = true;
+	music.volume = 0.5;
+
+	document.body.addEventListener("mousedown", function(){
+		if (music.paused && !falconHeavyBeingScrubbed)
+		{
+			music.currentTime = 0;
+			music.play();
+		}
+	});
+	
+	document.body.addEventListener("keydown", function(){
+		if (music.paused && !falconHeavyBeingScrubbed)
+		{
+			music.currentTime = 0;
+			music.play();
+		}
+	});
+
+	document.body.addEventListener("touchstart", function(){
+		if (music.paused && !falconHeavyBeingScrubbed)
+		{
+			music.currentTime = 0;
+			music.play();
+		}
+	});
+
+	$("btnLeft" ).addEventListener("mousedown", function(){window.goingLeft=true;startMovingSound();});
+	$("btnRight").addEventListener("mousedown", function(){window.goingRight=true;startMovingSound();});
+	$("btnLower").addEventListener("mousedown", function(){window.goingFlaccid=true;startMovingSound();});
+	$("btnErect").addEventListener("mousedown", function(){window.gettingErection=true;if (!falconHeavyBeingScrubbed)startMovingSound();});
+
+	$("btnLeft" ).addEventListener("touchstart", function(){window.goingLeft=true;startMovingSound();});
+	$("btnRight").addEventListener("touchstart", function(){window.goingRight=true;startMovingSound();});
+	$("btnLower").addEventListener("touchstart", function(){window.goingFlaccid=true;startMovingSound();});
+	$("btnErect").addEventListener("touchstart", function(){window.gettingErection=true;if (!falconHeavyBeingScrubbed)startMovingSound();});
+
+	$("btnLeft" ).addEventListener("mouseup", function(){window.goingLeft=false;});
+	$("btnRight").addEventListener("mouseup", function(){window.goingRight=false;});
+	$("btnLower").addEventListener("mouseup", function(){window.goingFlaccid=false;});
+	$("btnErect").addEventListener("mouseup", function(){window.gettingErection=false;});
+
+	$("btnLeft" ).addEventListener("mouseout", function(){window.goingLeft=false;});
+	$("btnRight").addEventListener("mouseout", function(){window.goingRight=false;});
+	$("btnLower").addEventListener("mouseout", function(){window.goingFlaccid=false;});
+	$("btnErect").addEventListener("mouseout", function(){window.gettingErection=false;});
+
+	$("btnLeft" ).addEventListener("touchend", function(){window.goingLeft=false;});
+	$("btnRight").addEventListener("touchend", function(){window.goingRight=false;});
+	$("btnLower").addEventListener("touchend", function(){window.goingFlaccid=false;});
+	$("btnErect").addEventListener("touchend", function(){window.gettingErection=false;});
+
+
+	// Import JQuery
+	function $(el){return document.getElementById(el);}
+
+	window.goingLeft = false;
+	window.goingRight = false;
+	window.gettingErection = false;
+	window.goingFlaccid = false;
+
+	var elonShrugs = $("elonShrugs");
+	var falconHeavy = $("falconHeavy");
+	var elonShrugCounter = 0;
+
+	movingSound = new Audio("moving.ogg");
+	movingSound.loop = true;
+	startMovingAudio = new Audio("start_moving_short.ogg");
+	startMovingAudio.loop = false;
+
+	function nope(bigNope=false)
+	{
+		(new Audio("buzzer_short.ogg")).play();
+		elonShrugs.style.display = "block";
+		elonShrugs.style.background = "url(elon_shrugs_"+(elonShrugCounter%3)+".jpg)";
+		elonShrugs.style.backgroundSize = "100% 100%";
+		elonShrugCounter++;
+		if (bigNope)
+		{
+			setTimeout(function(){
+				(new Audio("buzzer_short.ogg")).play();
+			}, 1100);
+		}
+		for (var i=0; i<=(bigNope?2500:1300); i+=100)
+		{
+			setTimeout((function(ii){
+				return function(){
+					if (ii%200 == 0) elonShrugs.style.display = "block";
+					else elonShrugs.style.display = "none";
+				};
+			})(i), i);
+		}
+	}
+
+	loadFuel = nope;
+	staticFire = nope;
+	launch = nope;
+
+	function startMovingSound()
+	{
+		startMovingAudio.currentTime = 0;
+		startMovingAudio.play();
+		setTimeout(function(){
+			if (window.goingLeft || window.goingRight || window.gettingErection || window.goingFlaccid)
+			{
+				movingSound.currentTime = 0;
+				movingSound.play();
+			}
+		}, 500);
+	}
+
+	window.addEventListener("keydown", function(e){
+		console.log("key down: "+e.keyCode);
+		
+		// Right arrow
+		if (e.keyCode == 39 && !window.goingRight)
+		{
+			window.goingRight = true;
+			startMovingSound();
+		}
+		
+		// Left arrow
+		if (e.keyCode == 37 && !window.goingLeft)
+		{
+			window.goingLeft = true;
+			startMovingSound();
+		}
+		
+		// Up arrow
+		if (e.keyCode == 38 && !window.gettingErection)
+		{
+			window.gettingErection = true;
+			if (!falconHeavyBeingScrubbed) startMovingSound();
+		}
+		
+		// Down arrow
+		if (e.keyCode == 40 && !window.goingFlaccid)
+		{
+			window.goingFlaccid = true;
+			startMovingSound();
+		}
+	});
+
+	window.addEventListener("keyup", function(e){
+		console.log("key up: "+e.keyCode);
+		
+		// Right arrow
+		if (e.keyCode == 39)
+		{
+			window.goingRight = false;
+		}
+		
+		// Left arrow
+		if (e.keyCode == 37)
+		{
+			window.goingLeft = false;
+		}
+		
+		// Up arrow
+		if (e.keyCode == 38)
+		{
+			window.gettingErection = false;
+		}
+		
+		// Down arrow
+		if (e.keyCode == 40)
+		{
+			window.goingFlaccid = false;
+		}
+	});
+
+	var rockets = [];
+
+	var falconHeavyX = 250;
+	var falconHeavyTheta = 90;
+
+	falconHeavyBeingScrubbed = false;
+
+	// Physics
+	setInterval(function(){
+		for (var i=0; i<rockets.length; i++)
+		{
+			rockets[i].vy += rockets[i].isScrub ? 0.07 : 0.02;
+			rockets[i].y += rockets[i].vy;
+			rockets[i].el.style.top = (800-Math.floor(rockets[i].y)) + "px";
+			rockets[i].amos6 = "no please";
+			if (rockets[i].y > 1000)
+			{
+				document.body.removeChild(rockets[i].el);
+				rockets.splice(i, 1);
+				i--;
+			}
+		}
+		if (window.goingLeft === true)
+		{
+			falconHeavyX -= 1;
+			if (falconHeavyX < -199)
+			{
+				falconHeavyX = -200;
+				window.goingLeft = false;
+				nope();
+			}
+		}
+		if (window.goingRight === true) falconHeavyX += 1;
+		if (window.gettingErection === true && !falconHeavyBeingScrubbed)
+		{
+			falconHeavyTheta -= 0.05;
+			if (falconHeavyTheta < 1)
+			{
+				falconHeavyTheta = 1;
+				falconHeavyBeingScrubbed = true;
+				music.pause();
+				window.gettingErection = false;
+				nope(true);
+				for (var i=0; i<100; i++) setTimeout(spawnRocket, i*100, true);
+			}
+		}
+		if (falconHeavyBeingScrubbed || window.goingFlaccid)
+		{
+			falconHeavyTheta += 0.5;
+			if (falconHeavyTheta >= 90)
+			{
+				falconHeavyTheta = 90;
+				falconHeavyBeingScrubbed = false;
+				window.goingFlaccid = false;
+			}
+		}
+		falconHeavy.style.left = falconHeavyX+"px";
+		falconHeavy.style.transform = "rotate("+falconHeavyTheta+"deg)";
+		if (window.goingLeft || window.goingRight || window.gettingErection || window.goingFlaccid || falconHeavyBeingScrubbed)
+		{
+		}
+		else
+		{
+			movingSound.pause();
+			startMovingAudio.pause();
+		}
+	}, 20);
+
+	function spawnRocket(isScrub=false)
+	{
+		var rocketDiv = document.createElement("div");
+		rocketDiv.classList.add(isScrub ? "rocketScrub" : "rocket");
+		if (isScrub)
+		{
+			rocketDiv.style.color = ["#CCCCCC", "#999999", "#555555", "#333333"][Math.floor(Math.random()*4)];
+			rocketDiv.innerHTML = ["Scrubbed!", "Delayed until 2019", "Scrub", "delayed!"][Math.floor(Math.random()*4)];
+			rocketDiv.style.transform = "rotate("+Math.floor(Math.random()*90-45)+"deg)";
+		}
+		rocketDiv.style.left = Math.floor(100+Math.random()*700)+"px";
+		rocketDiv.style.top = "800px";
+		document.body.appendChild(rocketDiv);
+		rockets.push({y: 0, vy: 0, opacity: 0, el: rocketDiv, isScrub: isScrub});
+	}
+
+	// Spawn rockets
+	setInterval(spawnRocket, 5000);
+});
+</script>
+</body>
+</html>
+<!-- Made by Jesse Busman -->
+<!-- Contact: info@jesbus.com -->
+<!-- I will not respond to messages with less than 3 dank memes from /r/spacexmasterrace -->
